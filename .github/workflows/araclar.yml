@@ -1,0 +1,26 @@
+# GitHub'da bu dosyanın yolu tam olarak şöyle olmalı: .github/workflows/araclar.yml
+name: Araç konumları
+
+on:
+  schedule:
+    # Her gün 06:23 İstanbul saati (03:23 UTC). GitHub zamanlanmış işleri bazen
+    # geç başlatır; program 07:00'ı kendisi bekler ve 09:30'da biter.
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+    inputs:
+      deneme:
+        description: 'Saat aralığına bakmadan tek bir kayıt al'
+        type: boolean
+        default: true
+
+jobs:
+  kaydet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Araç konumlarını kaydet
+        run: python3 arac_kayit.py ${{ inputs.deneme && '--deneme' || '' }}
+        env:
+          WEB_APP_URL: ${{ secrets.WEB_APP_URL }}
+          GIZLI_ANAHTAR: ${{ secrets.GIZLI_ANAHTAR }}
